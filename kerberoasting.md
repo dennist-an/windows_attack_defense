@@ -2,10 +2,20 @@
 ### Kerberoast Attack
 Kerberoasting is a post-exploitation attack that attempts to exploit this behavior by obtaining a ticket and performing offline password cracking to open the ticket.
 
+To understand Kerberoasting, there is an item we need to define that plays a huge part during this attack technique. Service Principal Names (SPN) is used to uniquely identify a Windows Service. Kerberos authentication requires that with each service logon account there must be a SPN associated. This allows a client to request a service ticket without having the actual account name through Kerberos authentication.
+
+The SPN is not automatically created when you create the user in Active Directory, you HAVE to go and create the SPN. You can see below how to do this:
+```setspn -a thanos/WINDOMAIN.local:60111 WINDOMAIN\thanos```
+
+When the Kerberoast attack is executed, an adversary can use Domain credentials captured on any user to request Kerberos TGS tickets for accounts that are associated with the SPN records in Active Directory (AD). The TGS tickets are signed with the targeted user or services NTLM hash. This can then be cracked offline to retrieve the clear text password. By default, the tools to automate this process will retrieve the TGS ticket in the encrypted RC4 algorithm. This is where we can start to build our baseline in detecting this attack. The adversary can then crack that hash with hashcat 13100 and a wordlist to find the password for that/those accounts.
+
 Extracts out the tickets for every user that has an SPN registered.
 ```.\Rubeus.exe kerberoast /outfile:spn.txt```
 
-### Kerberoast Identification
+### Differences between Kerberoasting and AS-REP Roasting
+AS-REP Roasting has the same IDEA of Kerberoasting but is different in the fact that an account needs “Do not require Kerberos pre-authentication”. For Kerberos v5 you have to manually go in and disable Kerberos pre-auth. The only reason I can think of someone to actually want to do this is for backwards compatibility with Kerberos v4 libraries, which by default a password was not required for authentication. Another difference between the two, is AS-REP requests a Kerberos Authentication Ticket (TGT) not a service authentication ticket (TGS). The hashes you get between AS-REP and Kerberoasting are different. To crack the hash (if using hashcat you will need to change from 13100 to 18200 this is because Kerberoast requests TGS and AS-REP request TGT)
+
+### Kerberoast Detection
 When a TGS is requested, an event log with ID 4769 (Kerberos Ticket Granting Service (TGS) ticket request) is generated. However, AD also generates the same event ID whenever a user attempts to connect to a service, which means that the volume of this event is gigantic, and relying on it alone is virtually impossible to use as a detection method. If we happen to be in an environment where all applications support AES and only AES tickets are generated, then it would be an excellent indicator to alert on event ID 4769. If the ticket options is set for RC4, that is, if RC4 tickets are generated in the AD environment (which is not the default configuration), then we should alert and follow up on it.
 
 ### Kerberoast Prevention
