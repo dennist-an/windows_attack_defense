@@ -89,7 +89,7 @@ PS C:\Users\bob\Downloads> .\Certify.exe find /vulnerable
 
 Certify completed in 00:00:00.9120044
 ```
-![certify request](./certifyRequest.png)
+![certify request](./img/certifyRequest.png)
 
 When checking the 'Vulnerable Certificate Templates' section from the output of Certify, we will see that a single template with plenty of information about it is listed. We can tell that the name of the CA in the environment is *PKI.eagle.local\\eagle-PKI-CA*, and the vulnerable template is named *UserCert*. The template is vulnerable because:
 
@@ -148,7 +148,7 @@ eVAB
 
 Certify completed in 00:00:15.8803493
 ```
-![request a certificate](./requestCert.png)
+![request a certificate](./img/requestCert.png)
 Once the attack finishes, we will obtain a certificate successfully. The command generates a PEM certificate and displays it as base64. We need to convert the PEM certificate to the PFX format by running the command mentioned in the output of Certify (when asked for the password, press Enter without providing one), however, to be on the safe side, let's first execute the below command to avoid bad formatting of the PEM file.
 
 ```
@@ -158,7 +158,7 @@ Then we can execute the openssl command mentioned in the output of Certify.
 ```
 openssl pkcs12 -in cert.pem -keyex -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out cert.pfx
 ```
-![convert to pem](./convertPEM.png)
+![convert to pem](./img/convertPEM.png)
 Now that we have the certificate in a usable PFX format (which Rubeus supports), we can request a Kerberos TGT for the account Administrator and authenticate with the certificate:
 
 ```
@@ -223,7 +223,7 @@ PS C:\Users\bob\Downloads> .\Rubeus.exe asktgt /domain:eagle.local /user:Adminis
   ASREP (key)              :  2EB79553702442F11E93044E3C915490
 ```
 
-![cert login](./certLogin.png)
+![cert login](./img/certLogin.png)
 
 After successful authentication, we will be able to list the content of the C$ share on DC1:
 
@@ -247,26 +247,26 @@ d-----        11/28/2022  11:27 AM                Windows
 
 ### Object ACL Detection
 When the CA generates the certificate, two events will be logged, one for the received request and one for the issued certificate, if it succeeds. Those events have the IDs of 4886 and 4887 as shown below:
-![event bob generate certificate 1](./eventBob.png)
-![event bob generate certificate 2](./eventBob%20(1).png)
+![event bob generate certificate 1](./img/eventBob.png)
+![event bob generate certificate 2](./img/eventBob%20(1).png)
 
 Unfortunately, we can only tell that Bob requested a certificate from WS001; we cannot know if the request specified the subject alternative name ("SAN").
 
 The CA contains a list of all issued certificates, so if we look there, we will see the request for certificate ID 36 (the one from the attack scenario above):
 
-![detect cert](./detectCert1.png)
+![detect cert](./img/detectCert1.png)
 
 The general overview of the GUI tool does not display the SAN either, but we can tell that a certificate was issued via the vulnerable template. If we want to find the SAN information, we'll need to open the certificate itself:
 
-![detect cert2](./detectCert2.png)
+![detect cert2](./img/detectCert2.png)
 
 There is also the possibility to view that programmatically: the command certutil -view will dump everything on the CA with all of the information about each certificate (this can be massive in a large environment):
 
-![cert pieces](./certpieces.png)
+![cert pieces](./img/certpieces.png)
 
 Finally, if you recall, in the attack, we used the obtained certificate for authentication and obtained a TGT; AD will log this request with the event ID 4768, which will specifically have information about the logon attempt with a certificate:
 
-![detect cert3](./detect_cert_4768.png)
+![detect cert3](./img/detect_cert_4768.png)
 
 Note that events 4886 and 4887 will be generated on the machine issuing the certificate rather than the domain controller. If GUI access is not available, we can use PSSession to interact with the PKI machine, and the Get-WinEvent cmdlet to search for the events:
 

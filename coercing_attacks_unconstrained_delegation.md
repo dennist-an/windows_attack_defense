@@ -212,11 +212,11 @@ Bye!
 As mentioned, Windows does not provide an out-of-the-box solution for monitoring RPC activity. The RPC Firewall from zero networks is an excellent method of detecting the abuse of these functions and can indicate immediate signs of compromise; however, if we follow the general recommendations to not install third-party software on Domain Controllers then firewall logs are our best chance.
 
 A successful coercing attack with Coercer will result in the following host firewall log, where the machine at .128 is the attacker machine and the .200 is the Domain Controller:
-![firewall coercer log](./Coercer-FirewallLogs.png)
+![firewall coercer log](./img/Coercer-FirewallLogs.png)
 We can see plenty of incoming connections to the DC, followed up by outbound connections from the DC to the attacker machine; this process repeats a few times as Coercer goes through several different functions. All of the outbound traffic is destined for port 445.
 
 If we go forward and block outbound traffic to port 445, then we will observe the following behavior:
-![firewall coercer log2](./Coercer-FirewallLogsBlockOutbound139n445.png)
+![firewall coercer log2](./img/Coercer-FirewallLogsBlockOutbound139n445.png)
 Now we can see that even though the inbound connection is successful, the firewall drops the outbound one, and consequently, the attacker does not receive any coerced TGTs. Sometimes, when port 445 is blocked, the machine will attempt to connect to port 139 instead, so blocking both ports 139 and 445 is recommended.
 
 The above can also be used for detection, as any unexpected dropped traffic to ports 139 or 445 is suspicious.

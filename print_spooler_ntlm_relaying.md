@@ -54,14 +54,14 @@ python3 ./dementor.py 172.16.18.20 172.16.18.3 -u bob -d eagle.local -p Slavi123
 ```
 Now, switching back to the terminal session with NTLMRelayx, we will see that DCSync was successful:
 
-![dcsync_successful_ntlm](./hashes.png)
+![dcsync_successful_ntlm](./img/hashes.png)
 
 ### Print Spooler & NTLM Relaying Detection
 Exploiting the PrinterBug will leave traces of network connections toward the Domain Controller; however, they are too generic to be used as a detection mechanism.
 
 In the case of using NTLMRelayx to perform DCSync, no event ID 4662 is generated (as mentioned in the DCSync section); however, to obtain the hashes as DC1 from DC2, there will be a successful logon event for DC1. This event originates from the IP address of the Kali machine, not the Domain Controller, as we can see below:
 
-![detect ntlm relay dcsync](./detectDCSync_ntlm.png)
+![detect ntlm relay dcsync](./img/detectDCSync_ntlm.png)
 A suitable detection mechanism always correlates all logon attempts from core infrastructure servers to their respective IP addresses (which should be static and known).
 
 ### Print Spooler & NTLM Relaying Prevention
@@ -69,4 +69,4 @@ Print Spooler should be disabled on all servers that are not printing servers. D
 
 Additionally, there is an option to prevent the abuse of the PrinterBug while keeping the service running: when disabling the registry key RegisterSpoolerRemoteRpcEndPoint, any incoming remote requests get blocked; this acts as if the service was disabled for remote clients. Setting the registry key to 1 enables it, while 2 disables it:
 
-![registry](./registry.png)
+![registry](./img/registry.png)

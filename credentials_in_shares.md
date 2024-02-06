@@ -25,7 +25,7 @@ Understanding and analyzing users' behavior is the best detection technique for 
 
 Below is an example of a successful logon with event ID 4624 for the Administrator account:
 
-![abnormal authentication](./abnormal_authentication.png)
+![abnormal authentication](./img/abnormal_authentication.png)
 
 **Tips:**
 Another detection technique is discovering the one-to-many connections, for example, when Invoke-ShareFinder scans every domain device to obtain a list of its network shares. It would be abnormal for a workstation to connect to 100s or even 1000s of other devices simultaneously.

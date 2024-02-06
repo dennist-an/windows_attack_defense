@@ -55,7 +55,7 @@ pwdlastset                    : 10/13/2022 10:36:04 PM
 msds-supportedencryptiontypes : 0
 usnchanged                    : 143463
 ```
-![constrained delegation](./ConsDelegation.png)
+![constrained delegation](./img/ConsDelegation.png)
 
 We can see that the user web_service is configured for delegating the HTTP service to the Domain Controller DC1. The HTTP service provides the ability to execute PowerShell Remoting. Therefore, any threat actor gaining control over web_service can request a Kerberos ticket for any user in Active Directory and use it to connect to DC1 over PowerShell Remoting.
 
@@ -146,7 +146,7 @@ In some occasions, a successful logon attempt with a delegated ticket will conta
 
 S4U is a Microsoft extension to the Kerberos protocol that allows an application service to obtain a Kerberos service ticket on behalf of a user; if we recall from the attack flow when utilizing Rubeus, we specified this S4U extension. Here is an example logon event by using the web service to generate a ticket for the user Administrator, which then was used to connect to the Domain Controller (precisely as the attack path above):
 
-![detecting constrained delegation attack](./detect1.png)
+![detecting constrained delegation attack](./img/detect1.png)
 
 ### Kerberos Constrained Delegation Prevention
 Fortunately, when designing Kerberos Delegation, Microsoft implemented several protection mechanisms; however, it did not enable them by default to any user account. There are two direct ways to prevent a ticket from being issued for a user via delegation:

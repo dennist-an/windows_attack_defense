@@ -6,7 +6,7 @@ DCSync is an attack that threat agents utilize to impersonate a Domain Controlle
 - Replicating Directory Changes All
 
 Her is an example of the user *rocky* having the *replicating directory changes* and *replicating directory changes all* set to *allow*.
-![replicating changes permission](./DCPermission.png)
+![replicating changes permission](./img/DCPermission.png)
 
 This can be exploited through...
 ```
@@ -20,7 +20,7 @@ It is possible to specify the /all parameter instead of a specific username, whi
 
 ### DCSync Detection
 Detecting DCSync is easy because each Domain Controller replication generates an event with the ID 4662 (An operation was performed on an object). We can pick up abnormal requests immediately by monitoring for this event ID and checking whether the initiator account is a Domain Controller.
-![detect dcsync attack](./DetectDCSync.png)
+![detect dcsync attack](./img/DetectDCSync.png)
 
 Since replications occur constantly, we can avoid false positives by ensuring the followings:
 - Either the property 1131f6aa-9c07-11d1-f79f-00c04fc2dcd2 or 1131f6ad-9c07-11d1-f79f-00c04fc2dcd2 is present in the event.

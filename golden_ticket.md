@@ -75,13 +75,13 @@ Correlating users' behavior is the best technique to detect abuse of forged tick
 
 Domain Controllers will not log events when a threat agent forges a Golden Ticket from a compromised machine. However, when attempting to access another system(s), we will see events for successful logon originating from the compromised machine:
 
-![logon after ticket](./logonAfterTickets.png)
+![logon after ticket](./img/logonAfterTickets.png)
 
 Another detection point could be a TGS service requested for a user without a previous TGT. However, this can be a tedious task due to the sheer volume of tickets (and many other factors). If we go back to the attack scenario, by running dir \\dc1\c$ at the end, we generated two TGS tickets on the Domain Controller:
 
-![ticket 1](./ticket1.png)
+![ticket 1](./img/ticket1.png)
 
-![ticket 2](./ticket2.png)
+![ticket 2](./img/ticket2.png)
 
 The only difference between the tickets is the service. However, they are ordinary compared to the same events not associated with the Golden Ticket.
 
